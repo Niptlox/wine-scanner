@@ -921,4 +921,24 @@ def main():
     e = sub.add_parser("eval", help="точность по разметке")
     e.add_argument("--no-ocr", action="store_true")
     e.add_argument("--no-det", action="store_true")
-    e.add_argument("--no-save", action="store_true", help="не 
+    e.add_argument("--no-save", action="store_true", help="не записывать engine_config.json")
+    sub.add_parser("segtest", help="контрольный лист вырезки бутылок (segtest.jpg)")
+    a = ap.parse_args()
+
+    if a.cmd == "build":
+        build_index()
+    elif a.cmd == "predict":
+        rec = WineRecognizer()
+        top, an = rec.predict(a.image, k=a.top)
+        print(f"\nYOLO: {'бутылка вырезана, conf %.2f' % an['seg_conf'] if an.get('box') else 'не вырезано, весь кадр'}")
+        print(f"OCR: {an['ocr_text'] or '—'}")
+        for i, c in enumerate(top, 1):
+            print(f"{i}. {c['label']} | {c['score']:.3f} (clip {c['clip']:.3f}, ocr {c['ocr']:.2f})")
+    elif a.cmd == "eval":
+        evaluate(no_ocr=a.no_ocr, no_det=a.no_det, save=not a.no_save)
+    elif a.cmd == "segtest":
+        segtest()
+
+
+if __name__ == "__main__":
+    main()

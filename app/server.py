@@ -13,6 +13,14 @@ import os
 import sys
 import tempfile
 import threading
+import time
+import traceback
+import faulthandler
+
+# Windows: при падении в C-коде (torch/cuda/opencv) печатаем стек, а не молча выходим
+faulthandler.enable()
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")   # конфликт двух OpenMP (torch + numpy/opencv)
+os.environ.setdefault("PYTHONUNBUFFERED", "1")
 
 from fastapi import FastAPI, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -33,11 +41,22 @@ REC = None
 LOCK = threading.Lock()  # одна модель на GPU — запросы обрабатываем по очереди
 
 
+def _log(msg):
+    print(msg, flush=True)
+
+
 @app.on_event("startup")
 def load():
     global REC
-    REC = SlugRecognizer(use_ocr=os.environ.get("USE_OCR", "1") == "1")
-    print(f"Готово: {len(REC.slugs)} вин, OCR={'on' if REC.ocr else 'off'}, YOLO={'on' if REC.det else 'off'}")
+    t = time.time()
+    try:
+        REC = SlugRecognizer(use_ocr=os.environ.get("USE_OCR", "1") == "1", log=_log)
+    except Exception:
+        _log("ОШИБКА при загрузке моделей:\n" + traceback.format_exc())
+        raise
+    _log(f"Готово за {time.time() - t:.0f} с: {len(REC.slugs)} вин, OCR={'on' if REC.ocr else 'off'}, "
+         f"YOLO={getattr(REC, 'det_name', 'off') if REC.det else 'off'}, устройство={we.get_device()}")
+    _log("Сервис слушает запросы. Страница: http://localhost:8080  Проверка: /health")
 
 
 async def _save_upload(request: Request, file: UploadFile | None):

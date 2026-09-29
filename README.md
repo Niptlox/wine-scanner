@@ -11,11 +11,6 @@ python -m venv .venv
 pip install -r requirements.txt
 # GPU: поставьте torch с CUDA по инструкции pytorch.org, если ещё не стоит
 
-# данные (не в git): эталонные фото и веса CLIP
-#   data/images_dataset/                          — фото каталога (нужны для картинок карточек и build)
-#   data/CLIP-ViT-H-14-laion2B-s32B-b79K/open_clip_pytorch_model.bin  — локальные веса (иначе скачаются)
-# индекс уже лежит в data/: wine_index_v2.npy + wine_index_v2_meta.json + dataset.csv
-
 uvicorn app.server:app --host 0.0.0.0 --port 8080
 # открыть http://localhost:8080 
 ```
