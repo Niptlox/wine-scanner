@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+data/CLIP-ViT-H-14-laion2B-s32B-b79K/
+data/*.pt
+data/analysis_cache.pkl
+data/*.tmp
+eval_results.csv
+*.zip

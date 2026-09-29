@@ -1,0 +1,14 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+open_clip_torch>=2.24
+torch
+torchvision
+ultralytics>=8.4
+easyocr>=1.7
+rapidfuzz>=3.0
+numpy
+pillow>=10
+pillow-heif
+tqdm
+opencv-python-headless

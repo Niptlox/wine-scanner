@@ -1,0 +1,11 @@
+{
+  "views": [
+    "seg_white",
+    "seg_center",
+    "seg_horiz",
+    "full_center"
+  ],
+  "agg": "max",
+  "ocr_weight": 0.3,
+  "note": "подобрано на 35 полевых фото: top-1 32/35, top-5 35/35 (CLIP ViT-H + OCR)"
+}
